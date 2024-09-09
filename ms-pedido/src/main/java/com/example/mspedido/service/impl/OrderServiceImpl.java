@@ -1,5 +1,6 @@
 package com.example.mspedido.service.impl;
 
+import com.example.mspedido.dto.ProductDto;
 import com.example.mspedido.entity.Order;
 import com.example.mspedido.entity.OrderDetail;
 import com.example.mspedido.feign.ProductFeign;
@@ -32,11 +33,26 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Optional<Order> findById(Integer id) {
-        Optional<Order> order = orderRepository.findById(id);
-        for (OrderDetail orderDetail : order.get().getOrderDetails()) {
-            orderDetail.setProductDto(productFeign.getById(orderDetail.getProductId()).getBody());
+        Optional<Order> orderOptional = orderRepository.findById(id);
+
+        // Verifica si el Optional contiene un valor
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+
+            // Recorre los detalles del pedido solo si el pedido existe
+            for (OrderDetail orderDetail : order.getOrderDetails()) {
+                // Obtiene el producto asociado al detalle del pedido y lo establece
+                ProductDto productDto = productFeign.getById(orderDetail.getProductId()).getBody();
+                orderDetail.setProductDto(productDto);
+            }
+
+            // Retorna el Optional con el pedido modificado
+            return Optional.of(order);
+        } else {
+            // Maneja el caso en que el pedido no se encuentra, por ejemplo:
+            // Lanzar una excepción personalizada o retornar un Optional vacío
+            return Optional.empty();
         }
-        return orderRepository.findById(id);
     }
 
     @Override
