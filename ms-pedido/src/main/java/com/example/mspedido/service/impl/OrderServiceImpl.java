@@ -3,6 +3,7 @@ package com.example.mspedido.service.impl;
 import com.example.mspedido.dto.ProductDto;
 import com.example.mspedido.entity.Order;
 import com.example.mspedido.entity.OrderDetail;
+import com.example.mspedido.feign.ClientFeign;
 import com.example.mspedido.feign.ProductFeign;
 import com.example.mspedido.repository.OrderRepository;
 import com.example.mspedido.service.OrderService;
@@ -20,6 +21,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ProductFeign productFeign;
+
+    @Autowired
+    private ClientFeign clientFeign;
+
 
     @Override
     public List<Order> list() {
